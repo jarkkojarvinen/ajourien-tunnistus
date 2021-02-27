@@ -1,0 +1,1 @@
+Ohessa. Koodi on täydellisen yllättävä snapshot koodista, jonka kirjoitin viime viikonloppuna. main.m on paljon yksinkertaisempi, kun asettaa dls= [1,1]; Etsi utu.fi -sivuilta tietoa matlabin asennuksesta ja lisenssitä. Jos pystyt toteuttamaan sekä python- että julia- versiot, niin olisi hieno!
