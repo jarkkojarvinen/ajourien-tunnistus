@@ -32,11 +32,14 @@ indsYUsed = []
 for l in range(1, nDls):
     # work amount... 
     lFactor = (l-1) /nDls
-    dl = dls[l,:]
+    dl = dls[l,:] # TODO 1?
 
-    indsLx= dl(1):sz0(1); indsLx= indsLx(1:kSkip:end);
-    indsLy= dl(2):sz0(2); indsLy= indsLy(1:kSkip:end);
-    z= z0(indsLx,indsLy); sz= size(z);
+    indsLx = np.arange(dl[0], sz[0]) #dl(1):sz0(1)
+    indsLx = np.arange(indsLx[0], end, kSkip) #indsLx(1:kSkip:end)
+    indsLy = np.arange(dl[1], sz0[1]) # dl(2):sz0(2)
+    indsLy = np.arange(0, end, kSkip) #indsLy(1:kSkip:end)
+    z = zo[indsLx, indsLy] #z0(indsLx,indsLy)
+    sz = size(z)
 
 #     disp(sprintf('directional curvatures, %.1f %% done', lFactor*100));
 #     global zs; initZs; % --> zs
