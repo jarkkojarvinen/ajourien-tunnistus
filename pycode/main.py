@@ -1,11 +1,15 @@
 import numpy as np
 import scipy.io as sio
+from os.path import dirname, join as pjoin
+from progress.bar import Bar
 
 print('Reading stuff...')
-temp = sio.loadmat('../data/z2.mat')
-z0 = temp.z
-sz0 = np.size(z0) 
-mask = temp.mask
+data_dir = pjoin(dirname(__file__), '..', 'data')
+mat_fname = pjoin(data_dir, 'z2.mat')
+temp = sio.loadmat(mat_fname)
+z0 = temp['z']
+sz0 = z0.shape
+mask = temp['mask']
 # Clear temp
 temp = None
 
@@ -18,9 +22,13 @@ if kSkip == 1:
     dls= [1, 1]
 else:
     # kSkip has to be odd!
-    l = kSkip / 2
-    dls = np.array([[1, 1], [l+1, 1], [1, l+1], [l+1, l+1]])
-nDls = np.size(dls,1)
+    l = int(kSkip / 2)
+    dls = np.array([[0, 0], 
+                    [l, 0],
+                    [0, l], 
+                    [l, l]])
+    dls = np.array(np.mat('0 0; 3 4'))
+nDls = np.shape(dls)[0]
 
 z = None
 Hfinal = 0 * z0
@@ -29,19 +37,18 @@ sFinal = 0 * z0
 indsXUsed = []
 indsYUsed = []
 
-for l in range(1, nDls):
-    # work amount... 
-    lFactor = (l-1) /nDls
-    dl = dls[l,:] # TODO 1?
+with Bar('Processing directional curvatures', max=nDls) as bar:
+    for l in range(0, nDls):
+        # work amount...
+        bar.next()
+        #lFactor = l /nDls
+        
+        dl = dls[l]
+        indsLx = np.arange(dl[0], sz0[0], kSkip)
+        indsLy = np.arange(dl[1], sz0[1], kSkip)
+        z = z0[indsLx][:,indsLy]
+        sz = np.size(z)
 
-    indsLx = np.arange(dl[0], sz[0]) #dl(1):sz0(1)
-    indsLx = np.arange(indsLx[0], end, kSkip) #indsLx(1:kSkip:end)
-    indsLy = np.arange(dl[1], sz0[1]) # dl(2):sz0(2)
-    indsLy = np.arange(0, end, kSkip) #indsLy(1:kSkip:end)
-    z = zo[indsLx, indsLy] #z0(indsLx,indsLy)
-    sz = size(z)
-
-#     disp(sprintf('directional curvatures, %.1f %% done', lFactor*100));
 #     global zs; initZs; % --> zs
 #     %alphas= 0.0:45.0:180.0; alphas= alphas(1:(end-1))*pi/180.0;
 #     alphas=  0.0:15.0:180.0; alphas= alphas(1:(end-1))*pi/180.0;
