@@ -2,14 +2,15 @@ import numpy as np
 import scipy.io as sio
 from os.path import dirname, join as pjoin
 from progress.bar import Bar
+from initZs import init_Zs
 
 print('Reading stuff...')
 data_dir = pjoin(dirname(__file__), '..', 'data')
 mat_fname = pjoin(data_dir, 'z2.mat')
 temp = sio.loadmat(mat_fname)
-z0 = temp['z']
+z0 = temp['z'].astype(int)
 sz0 = z0.shape
-mask = temp['mask']
+mask = temp['mask'].astype(int)
 # Clear temp
 temp = None
 
@@ -27,7 +28,6 @@ else:
                     [l, 0],
                     [0, l], 
                     [l, l]])
-    dls = np.array(np.mat('0 0; 3 4'))
 nDls = np.shape(dls)[0]
 
 z = None
@@ -47,9 +47,9 @@ with Bar('Processing directional curvatures', max=nDls) as bar:
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
         z = z0[indsLx][:,indsLy]
-        sz = np.size(z)
 
-#     global zs; initZs; % --> zs
+        sz = np.shape(z)
+        zs = init_Zs(z, sz[0], sz[1])
 #     %alphas= 0.0:45.0:180.0; alphas= alphas(1:(end-1))*pi/180.0;
 #     alphas=  0.0:15.0:180.0; alphas= alphas(1:(end-1))*pi/180.0;
 #     nAlphas= length(alphas);

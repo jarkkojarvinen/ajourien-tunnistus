@@ -10,6 +10,14 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "program": "${workspaceFolder}/pycode/pytest.ini",
+            "console": "integratedTerminal"
         }
     ]
 }
