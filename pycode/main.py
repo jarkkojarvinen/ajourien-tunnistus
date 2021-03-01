@@ -1,14 +1,16 @@
 import numpy as np
 import scipy.io as sio
-from os.path import dirname, join as pjoin
+from os.path import join
+from pathlib import Path
 from progress.bar import Bar
-from .initZs import init_Zs
-from .schemas import DataStruct
+from initZs import init_Zs
+from schemas import DataStruct
+from getDirectionalH import get_directional_H
 
 
 print('Reading stuff...')
-data_dir = pjoin(dirname(__file__), '..', 'data')
-mat_fname = pjoin(data_dir, 'z2.mat')
+data_dir = join(Path(__file__).parents[1], 'data')
+mat_fname = join(data_dir, 'z2.mat')
 temp = sio.loadmat(mat_fname)
 z0 = temp['z'].astype(int)
 sz0 = z0.shape
@@ -35,7 +37,7 @@ nDls = np.shape(dls)[0]
 z = None
 Hfinal = 0 * z0
 Afinal = 0 * z0
-sFinal = 0 * z0
+sFinal = 0 * z0 # Crash here?! Out of memory?
 indsXUsed = []
 indsYUsed = []
 
@@ -60,9 +62,9 @@ with Bar('Processing directional curvatures', max=nDls) as bar:
 
         for k in range(0, nAlphas):
             alpha = alphas[k]
-            H, s = getDirectionalH(alpha, delta)
-            entropy = entropyfilt(H)
-            data.append(DataStruct(H=H, J=entropy, s=s))
+            H, s = get_directional_H(alpha, delta)
+            #entropy = entropyfilt(H)
+            #data.append(DataStruct(H=H, J=entropy, s=s))
 
 #     disp('assembling an image from entropy minimae');
 #     Js= zeros(1,nAlphas); counter= 0; dCounter= 100000; nAll= prod(sz);

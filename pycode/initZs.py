@@ -1,5 +1,5 @@
-from .schemas import ZStruct
-from .utils.list_utils import create_row_vector
+from schemas import ZStruct
+from utils.list_utils import create_row_vector
 
 
 def init_Zs(z, n, m):
