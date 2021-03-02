@@ -35,9 +35,7 @@ else:
 nDls = np.shape(dls)[0]
 
 z = None
-Hfinal = 0 * z0
-Afinal = 0 * z0
-sFinal = 0 * z0 # Crash here?! Out of memory?
+Hfinal = Afinal = sFinal = 0 * z0
 indsXUsed = []
 indsYUsed = []
 
@@ -62,7 +60,7 @@ with Bar('Processing directional curvatures', max=nDls) as bar:
 
         for k in range(0, nAlphas):
             alpha = alphas[k]
-            H, s = get_directional_H(alpha, delta)
+            H, s = get_directional_H(alpha, delta, z, zs)
             #entropy = entropyfilt(H)
             #data.append(DataStruct(H=H, J=entropy, s=s))
 

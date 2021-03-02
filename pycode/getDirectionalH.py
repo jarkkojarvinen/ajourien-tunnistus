@@ -23,22 +23,22 @@ def get_directional_H(alpha, delta, z, zs):
     
     # 1) z(alpha), l(alpha), beta(alpha)
     # TODO: Call method calculate_z_l
-    uf = np.floor(u1)
-    uc = np.ceil(u1)
+    uf = int(np.floor(u1))
+    uc = int(np.ceil(u1))
     t = u1 - uf
-    z1 = zs(uf).z * (1-t) + zs(uc).z * t
-    beta1 = np.atan2(z1 - z, h)
+    z1 = zs[uf].z * (1-t) + zs[uc].z * t
+    beta1 = np.arctan2(z1 - z, h) # TODO: Here is problem now
     l1 = h / np.cos(beta1)
     
     # 2) z(alpha+pi), l(alpha+pi), beta(alpha+pi)
     # +pi in alpha --> +4 in u
     u2 = (u1 + 4) % 8
     # TODO: Call method calculate_z_l
-    uf = np.floor(u2)
-    uc = np.ceil(u2)
+    uf = int(np.floor(u2))
+    uc = int(np.ceil(u2))
     t = u2 - uf    
-    z2 = zs(uf).z * (1-t) + zs(uc).z * t
-    beta2 = np.atan2(z2 - z, h)
+    z2 = zs[uf].z * (1-t) + zs[uc].z * t
+    beta2 = np.arctan2(z2 - z, h)
     l2 = h / np.cos(beta2)
 
     s = np.abs(z2 - z1) / (2*h)
