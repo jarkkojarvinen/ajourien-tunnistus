@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from ..initZs import init_Zs, ZStruct
+from src.initZs import init_Zs
+
 
 def test_init_Zs():
     z = np.array(
@@ -16,7 +17,7 @@ def test_init_Zs():
     xBack = [0, 0, 1, 2, 3, 4]
     yForw = [1, 2, 3, 4, 4]
     yBack = [0, 0, 1, 2, 3]
-    
+
     result = init_Zs(z, n, m)
 
     assert np.array_equal(z[xForw],         result[0].z)

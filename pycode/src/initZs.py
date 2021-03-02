@@ -1,4 +1,4 @@
-from schemas import ZStruct
+from schemas.zstruct import ZStruct
 from utils.list_utils import create_row_vector
 
 

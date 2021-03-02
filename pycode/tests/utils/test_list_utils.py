@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
-#from pytest_mock import MockerFixture
-from ...utils.list_utils import create_row_vector
+from src.utils.list_utils import create_row_vector
 
 
 def test_create_row_vector_with_pre():

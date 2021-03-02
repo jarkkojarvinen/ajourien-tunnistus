@@ -1,6 +1,7 @@
 import numpy as np
 from alpha2u import alpha2u
 
+
 def get_directional_H(alpha, delta, z, zs):
     '''
     Returns the directional curvature and slope
@@ -17,36 +18,35 @@ def get_directional_H(alpha, delta, z, zs):
     #     l_1 = _h / np.cos(beta_1)
     #     return l_1, z_1
 
-
     u1, h = alpha2u(alpha)
     h = h * delta
-    
+
     # 1) z(alpha), l(alpha), beta(alpha)
     # TODO: Call method calculate_z_l
     uf = int(np.floor(u1))
     uc = int(np.ceil(u1))
     t = u1 - uf
     z1 = zs[uf].z * (1-t) + zs[uc].z * t
-    beta1 = np.arctan2(z1 - z, h) # TODO: Here is problem now
+    beta1 = np.arctan2(z1-z, h)
     l1 = h / np.cos(beta1)
-    
+
     # 2) z(alpha+pi), l(alpha+pi), beta(alpha+pi)
     # +pi in alpha --> +4 in u
     u2 = (u1 + 4) % 8
     # TODO: Call method calculate_z_l
     uf = int(np.floor(u2))
     uc = int(np.ceil(u2))
-    t = u2 - uf    
+    t = u2 - uf
     z2 = zs[uf].z * (1-t) + zs[uc].z * t
-    beta2 = np.arctan2(z2 - z, h)
+    beta2 = np.arctan2(z2-z, h)
     l2 = h / np.cos(beta2)
 
     s = np.abs(z2 - z1) / (2*h)
     # clear z1
     z1 = None
     # clear z2
-    z2 = None    
-    
+    z2 = None
+
     # 3)
     H = -2.0 * (beta1 + beta2) / (l1 + l2)
 

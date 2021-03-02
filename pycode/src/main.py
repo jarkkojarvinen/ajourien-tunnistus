@@ -4,12 +4,12 @@ from os.path import join
 from pathlib import Path
 from progress.bar import Bar
 from initZs import init_Zs
-from schemas import DataStruct
 from getDirectionalH import get_directional_H
+from schemas.datastruct import DataStruct
 
 
 print('Reading stuff...')
-data_dir = join(Path(__file__).parents[1], 'data')
+data_dir = join(Path(__file__).parents[2], 'data')
 mat_fname = join(data_dir, 'z2.mat')
 temp = sio.loadmat(mat_fname)
 z0 = temp['z'].astype(int)
