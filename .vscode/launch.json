@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/pycode/src/main.py", //"${file}",
+            "program": "${workspaceFolder}/pycode/run.py", //"${file}",
             "console": "integratedTerminal"
         },
         {

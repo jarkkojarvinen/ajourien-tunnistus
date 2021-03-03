@@ -1,5 +1,5 @@
 import numpy as np
-from alpha2u import alpha2u
+from .alpha2u import alpha2u
 
 
 def get_directional_H(alpha, delta, z, zs):
