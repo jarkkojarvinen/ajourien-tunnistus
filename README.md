@@ -7,7 +7,8 @@ Ohessa viestintää sähköpostista ja palavereista. Uusin ensimmäisenä.
 - Tavoitteet:
     - Python koodi
         - Tee Debug versio kuvasta
-        - Shiftauksen nopea version tutkiminen
+        - Shiftauksen nopea version tutkiminen 
+            - Mahdollisesti tämä? https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.shift.html
         - Shiftaa JIT? Muistinhallintanäkökulma
     - Julia koodi
     - CSC laskentakeskus implementaatio
