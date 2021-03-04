@@ -1,8 +1,26 @@
+import numpy as np
 from .schemas.zstruct import ZStruct
 from .utils.list_utils import create_row_vector
 
 
-def init_Zs(z, n, m):
+def init_Zs(z):
+    n, m = np.shape(z)
+    xForw, xBack, yForw, yBack = __create_index_vectors(n, m)
+
+    return [
+        # TODO: Remove later ZStruct. Is there future needs to wrap with class?
+        ZStruct(z[xForw][ :   ]),
+        ZStruct(z[xForw][yForw]),
+        ZStruct(z[ :   ][yForw]),
+        ZStruct(z[xBack][yForw]),
+        ZStruct(z[xBack][ :   ]),
+        ZStruct(z[xBack][yBack]),
+        ZStruct(z[ :   ][yBack]),
+        ZStruct(z[xForw][yBack]),
+        ZStruct(z[xForw][ :   ])
+    ]
+
+def __create_index_vectors(n, m):
     # matlab [2:n, n]
     xForw = create_row_vector(1, n-1, post=n-1)
     # matlab [1,1:( n-1)]
@@ -11,15 +29,4 @@ def init_Zs(z, n, m):
     yForw = create_row_vector(1, m-1, post=m-1)
     # matlab [1,1: (m-1)]
     yBack = create_row_vector(0, m-2, pre=0)
-
-    zs = []
-    zs.append(ZStruct(z=z[xForw]))
-    zs.append(ZStruct(z=z[xForw][yForw]))
-    zs.append(ZStruct(z=z[:][yForw]))
-    zs.append(ZStruct(z=z[xBack][yForw]))
-    zs.append(ZStruct(z=z[xBack]))
-    zs.append(ZStruct(z=z[xBack][yBack]))
-    zs.append(ZStruct(z=z[:][yBack]))
-    zs.append(ZStruct(z=z[xForw][yBack]))
-    zs.append(ZStruct(z=z[xForw]))
-    return zs
+    return xForw, xBack, yForw, yBack

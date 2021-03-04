@@ -2,6 +2,17 @@
 
 Ohessa viestintää sähköpostista. Uusin ensimmäisenä.
 
+## 1.3.2021 Paavo:
+> xForw on siis indeksijoukko, jolla tehdään semmoinen sivulle nytkäytys (horisontaalisesti oikealle). Voit toteuttaa sen pythonilla miten tykkäät, kunhan vaan saadaan kuvasta kopio, jossa pikselit on nytkäytetty. Jossain python imlib tms. saattaa olla vastaava jo. Idea on siis, että ehkä useissa kohdissa tarvitsee viitata pikseliin ja sen oikealla olevaan pikdeliin, ja tämä tehdäämn muistia tuhlailevasti (mutta nopeasti) tässä ilman luuppeja. Silloin tulee kysymykseksi se, mitä arvoja laitetaan paljastuville pikseleille? (Esim. 1,1,2,3 tuohon ekaan paikkaan?)
+
+> Oikea vastaus olisi: jotain kuvan ulkopuolelta vasemmalta, jos siellä esim. olisi naapuritiilikuva. Mutta kun ei ole, niin annetaan arvojen monistua. Tämä johtaa siihen, että suunnatut kaarevuudet ovat suunnilleen kunnossa vain välillä 2...(nx-1). Mutta eipä sillä juuri ole väliä. Tässä sovelluksessa on vielä tuo maskibitti. Kannattaa ehkä tehdä kaksi versiota. Toinen, jossa ei ole maskibittiä eikä sitä pikselien täyttöä (Jonne ehkä tietää, mikä on virallinen termi. Tulos siis lasketaan "3 x useammalle pikselille kuin kaava varsinaisesti sallii...") Sellainen koodi on selkeämpi. Sitten kun se toimii, lisäät nuo ominaisuudet.
+> Yksi asia unohtui vielä: ehkä pystyt modularisoimaan ongelman siten, että lasket aina kaikki pikselit kattavan tapauksen, ja kutsut ylempää kuvilla, jotka on harvennettu (valittu aktiivinen osa kuvasta osatehtäväksi). Mutta tässä painaa nopeus hiukan: eli laskentanopeus määrää mitä valitset. Muistia taas voi tuhlata.
+
+> Ohessa yhden kurssin luento, jossa on sinulle asiaa kalvoissa #30 ja #31. Muun houreen voit skipata. ;) Kalvossa #31 on muistin käyttö, eli sopivasti optimoituna muistia kuluu 5 x syötekuvan valitun pikselisetin verran.  Tämän optimoinnin voisit jättää kolmanteen vaiheeseen eli:
+> 1) kaikki pikselit (eka versio)
+> 2) osapikselijoukoisyta tapahtuva sommittelu (toivottavasti siten, että kutsuu toteutusta 1))
+> 3) mahdollinen muistin optimointi ja naapurikuvista tapahtuva pikselien lainailu
+
 ---
 ## 27.2.2021 Paavo:
 

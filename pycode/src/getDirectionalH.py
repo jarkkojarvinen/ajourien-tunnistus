@@ -8,38 +8,29 @@ def get_directional_H(alpha, delta, z, zs):
     [H,s]= getDirectionalH(alpha,delta)
     H: curvature, s: slope 
     '''
-    # TODO: Use method on steps 1 and 2
-    # def calculate_z_l(_u, _z, _h):
-    #     uf = np.floor(_u)
-    #     uc = np.ceil(_u)
-    #     t = _u - uf
-    #     z_1 = zs(uf).z * (1-t) + zs(uc).z * t
-    #     beta_1 = np.atan2(z_1 - _z, _h)
-    #     l_1 = _h / np.cos(beta_1)
-    #     return l_1, z_1
+
+    def __calculate_lzb(u, z, zs, h):
+        """
+        Repeative code extracted to single method to return l_x, z_x and beta_x
+        """
+        uf = int(np.floor(u))
+        uc = int(np.ceil(u))
+        t = u - uf
+        zx = zs[uf].z * (1-t) + zs[uc].z * t
+        beta = np.arctan2(zx - z, h)
+        lx = h / np.cos(beta)
+        return lx, zx, beta
 
     u1, h = alpha2u(alpha)
     h = h * delta
 
     # 1) z(alpha), l(alpha), beta(alpha)
-    # TODO: Call method calculate_z_l
-    uf = int(np.floor(u1))
-    uc = int(np.ceil(u1))
-    t = u1 - uf
-    z1 = zs[uf].z * (1-t) + zs[uc].z * t
-    beta1 = np.arctan2(z1-z, h)
-    l1 = h / np.cos(beta1)
+    l1, z1, beta1 = __calculate_lzb(u1, z, zs, h)
 
     # 2) z(alpha+pi), l(alpha+pi), beta(alpha+pi)
     # +pi in alpha --> +4 in u
     u2 = (u1 + 4) % 8
-    # TODO: Call method calculate_z_l
-    uf = int(np.floor(u2))
-    uc = int(np.ceil(u2))
-    t = u2 - uf
-    z2 = zs[uf].z * (1-t) + zs[uc].z * t
-    beta2 = np.arctan2(z2-z, h)
-    l2 = h / np.cos(beta2)
+    l2, z2, beta2 = __calculate_lzb(u2, z, zs, h)
 
     s = np.abs(z2 - z1) / (2*h)
     # clear z1

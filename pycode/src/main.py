@@ -51,8 +51,8 @@ def run():
             indsLy = np.arange(dl[1], sz0[1], kSkip)
             z = z0[indsLx][:, indsLy]
 
-            n, m = np.shape(z)
-            zs = init_Zs(z, n, m)
+            #n, m = np.shape(z)
+            zs = init_Zs(z)
             #alphas = np.arange(0.0, 45.0, 15.0)
             alphas = np.arange(0.0, 180.0, 15.0)
             alphas = alphas * np.pi/180.0
@@ -62,7 +62,7 @@ def run():
             for k in range(0, nAlphas):
                 alpha = alphas[k]
                 H, s = get_directional_H(alpha, delta, z, zs)
-                #entropy = entropyfilt(H)
+                #entropy = entropyfilt(H) # TODO Continue here
                 #data.append(DataStruct(H=H, J=entropy, s=s))
 
     #     disp('assembling an image from entropy minimae');
