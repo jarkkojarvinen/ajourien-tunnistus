@@ -8,6 +8,7 @@ from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
 
 
+# TODO: Add path variable so you can set file path in upper level e.g. run.py
 def run():
     print('Reading stuff...')
     data_dir = join(Path(__file__).parents[2], 'data')

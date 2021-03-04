@@ -1,6 +1,18 @@
 # Ajourien tunnistus - UTU
 
-Ohessa viestintää sähköpostista. Uusin ensimmäisenä.
+Ohessa viestintää sähköpostista ja palavereista. Uusin ensimmäisenä.
+
+
+## 4.3 Palaveri
+- Tavoitteet:
+    - Python koodi
+        - Tee Debug versio kuvasta
+        - Shiftauksen nopea version tutkiminen
+        - Shiftaa JIT? Muistinhallintanäkökulma
+    - Julia koodi
+    - CSC laskentakeskus implementaatio
+    - CNN oppiminen
+        - Urien löytäminen kuvasta
 
 ## 1.3.2021 Paavo:
 > xForw on siis indeksijoukko, jolla tehdään semmoinen sivulle nytkäytys (horisontaalisesti oikealle). Voit toteuttaa sen pythonilla miten tykkäät, kunhan vaan saadaan kuvasta kopio, jossa pikselit on nytkäytetty. Jossain python imlib tms. saattaa olla vastaava jo. Idea on siis, että ehkä useissa kohdissa tarvitsee viitata pikseliin ja sen oikealla olevaan pikdeliin, ja tämä tehdäämn muistia tuhlailevasti (mutta nopeasti) tässä ilman luuppeja. Silloin tulee kysymykseksi se, mitä arvoja laitetaan paljastuville pikseleille? (Esim. 1,1,2,3 tuohon ekaan paikkaan?)
