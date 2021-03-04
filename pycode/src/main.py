@@ -1,18 +1,17 @@
 import numpy as np
 import scipy.io as sio
-from os.path import join
-from pathlib import Path
 from progress.bar import Bar
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
 
 
-# TODO: Add path variable so you can set file path in upper level e.g. run.py
-def run():
+def run(mat_fname, m=0.03292):
+    """
+    mat_fname = file path to mat file
+    m = grid constant
+    """
     print('Reading stuff...')
-    data_dir = join(Path(__file__).parents[2], 'data')
-    mat_fname = join(data_dir, 'z2.mat')
     temp = sio.loadmat(mat_fname)
     z0 = temp['z'].astype(int)
     sz0 = z0.shape
@@ -21,9 +20,9 @@ def run():
     temp = None
 
     # can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
-    kSkip = 4
+    kSkip = 128
     # (m) grid constant
-    delta = kSkip * 0.03292
+    delta = kSkip * m
 
     if kSkip == 1:
         dls = [1, 1]
@@ -34,19 +33,16 @@ def run():
                         [l, 0],
                         [0, l],
                         [l, l]])
-    nDls = np.shape(dls)[0]
+    nDls = len(dls)
 
     z = None
     Hfinal = Afinal = sFinal = 0 * z0
-    indsXUsed = []
-    indsYUsed = []
+    indsXUsed = indsYUsed = []
 
     with Bar('Processing directional curvatures', max=nDls) as bar:
         for l in range(0, nDls):
             # work amount...
             bar.next()
-            #lFactor = l /nDls
-
             dl = dls[l]
             indsLx = np.arange(dl[0], sz0[0], kSkip)
             indsLy = np.arange(dl[1], sz0[1], kSkip)
@@ -57,13 +53,13 @@ def run():
             #alphas = np.arange(0.0, 45.0, 15.0)
             alphas = np.arange(0.0, 180.0, 15.0)
             alphas = alphas * np.pi/180.0
-            nAlphas = np.size(alphas)
+            nAlphas = len(alphas)
             data = []
 
             for k in range(0, nAlphas):
                 alpha = alphas[k]
                 H, s = get_directional_H(alpha, delta, z, zs)
-                #entropy = entropyfilt(H) # TODO Continue here
+                # entropy = entropyfilt(H) # TODO Continue here
                 #data.append(DataStruct(H=H, J=entropy, s=s))
 
     #     disp('assembling an image from entropy minimae');

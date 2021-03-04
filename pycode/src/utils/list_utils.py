@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def create_row_vector(start, end, pre=None, post=None):
     """
     Created to support Matlab row vector generation.
@@ -10,9 +13,9 @@ def create_row_vector(start, end, pre=None, post=None):
         This call is equal with create_row_vector(1, 3, pre=1)
     NOTE: If both pre and post given then only pre will be set
     """
-    new_list = [i for i in range(start, end+1)]
+    base_list = range(start, end+1)
     if pre is not None:
-        new_list.insert(0, pre)
+        return np.concatenate(([pre], base_list), axis=0)
     elif post is not None:
-        new_list.append(post)
-    return new_list
+        return np.concatenate((base_list, [post]), axis=0)
+    return base_list

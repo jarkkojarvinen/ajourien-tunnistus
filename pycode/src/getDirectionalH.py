@@ -2,25 +2,25 @@ import numpy as np
 from .alpha2u import alpha2u
 
 
+def __calculate_lzb(u, z, zs, h):
+    """
+    Repeatitive code extracted to single method to return l_x, z_x and beta_x
+    """
+    uf = int(np.floor(u))
+    uc = int(np.ceil(u))
+    t = u - uf
+    zx = zs[uf].z * (1-t) + zs[uc].z * t
+    beta = np.arctan2(zx - z, h)
+    lx = h / np.cos(beta)
+    return lx, zx, beta
+
+
 def get_directional_H(alpha, delta, z, zs):
     '''
     Returns the directional curvature and slope
     [H,s]= getDirectionalH(alpha,delta)
     H: curvature, s: slope 
     '''
-
-    def __calculate_lzb(u, z, zs, h):
-        """
-        Repeative code extracted to single method to return l_x, z_x and beta_x
-        """
-        uf = int(np.floor(u))
-        uc = int(np.ceil(u))
-        t = u - uf
-        zx = zs[uf].z * (1-t) + zs[uc].z * t
-        beta = np.arctan2(zx - z, h)
-        lx = h / np.cos(beta)
-        return lx, zx, beta
-
     u1, h = alpha2u(alpha)
     h = h * delta
 
