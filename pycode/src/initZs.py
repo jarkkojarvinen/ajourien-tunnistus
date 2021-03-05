@@ -9,15 +9,15 @@ def init_Zs(z):
 
     return [
         # TODO: Remove later ZStruct. Is there future needs to wrap with class?
-        ZStruct(z[xForw][ :   ]),
-        ZStruct(z[xForw][yForw]),
-        ZStruct(z[ :   ][yForw]),
-        ZStruct(z[xBack][yForw]),
-        ZStruct(z[xBack][ :   ]),
-        ZStruct(z[xBack][yBack]),
-        ZStruct(z[ :   ][yBack]),
-        ZStruct(z[xForw][yBack]),
-        ZStruct(z[xForw][ :   ])
+        ZStruct(z[xForw,]),
+        ZStruct(z[xForw][:, yForw]),
+        ZStruct(z[:,yForw]),
+        ZStruct(z[xBack][:, yForw]),
+        ZStruct(z[xBack,]),
+        ZStruct(z[xBack][:, yBack]),
+        ZStruct(z[:,yBack]),
+        ZStruct(z[xForw][:, yBack]),
+        ZStruct(z[xForw,])
     ]
 
 def __create_index_vectors(n, m):
