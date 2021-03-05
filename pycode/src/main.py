@@ -38,7 +38,7 @@ def run(mat_fname, m=0.03292):
     nDls = len(dls)
 
     z = None
-    Hfinal = Afinal = sFinal = 0 * z0
+    HFinal = AFinal = sFinal = 0 * z0
     indsXUsed = indsYUsed = []
 
     with Bar('Processing directional curvatures', max=nDls) as bar:
@@ -63,9 +63,9 @@ def run(mat_fname, m=0.03292):
                 alpha = alphas[k]
                 H, s = get_directional_H(alpha, delta, z, zs)
                 entr_img = entropy(H, square(9))  # entropy = entropyfilt(H)
-                data.append(DataStruct(H=H, J=entropy, s=s))
+                data.append(DataStruct(H=H, J=entr_img, s=s))
 
-            nAll = sz.prod(axis=1)
+            nAll = sz[0]*sz[1]
             with Bar('Assembling an image from entropy minimae', max=nAll*nDls) as subbar:
                 Js = np.zeros(nAlphas)
                 counter = 0
@@ -73,8 +73,8 @@ def run(mat_fname, m=0.03292):
 
                 # aspects
                 A = 0 * H
-                for i in range(0, sz(0)):
-                    for j in range(0, sz(1)):
+                for i in range(0, sz[0]):
+                    for j in range(0, sz[1]):
                         if counter % dCounter == 0:
                             subbar.next()
                         counter = counter + 1
@@ -82,7 +82,7 @@ def run(mat_fname, m=0.03292):
                         for k in range(1, nAlphas):
                             Js[k] = data[k].J[i, j]
 
-                        k = min(Js)[1]
+                        k = int(min(Js))
                         H[i, j] = data[k].J[i, j]
                         A[i, j] = k
                         s[i, j] = data[k].s[i, j]
