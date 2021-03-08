@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.io as sio
+from scipy import integrate
 from skimage.filters.rank import entropy
 from skimage.morphology import disk, square
 from progress.bar import Bar
@@ -11,7 +12,7 @@ from .schemas.datastruct import DataStruct
 def run(mat_fname, m=0.03292):
     """
     mat_fname = file path to mat file
-    m = grid constant
+    m = grid constant. Default value 0.03292
     """
     print('Reading stuff...')
     temp = sio.loadmat(mat_fname)
@@ -38,8 +39,11 @@ def run(mat_fname, m=0.03292):
     nDls = len(dls)
 
     z = None
-    HFinal = AFinal = sFinal = np.zeros(sz0)
-    indsXUsed = indsYUsed = []
+    HFinal = np.zeros(sz0)
+    AFinal = np.zeros(sz0)
+    sFinal = np.zeros(sz0)
+    indsXUsed = []
+    indsYUsed = []
 
     with Bar('Processing directional curvatures', max=nDls) as bar:
         for l in range(0, nDls):
@@ -51,39 +55,38 @@ def run(mat_fname, m=0.03292):
             z = z0[indsLx][:, indsLy]
             sz = z.shape
 
-            #n, m = np.shape(z)
             zs = init_Zs(z)
-            #alphas = np.arange(0.0, 45.0, 15.0)
-            alphas = np.arange(0.0, 180.0, 15.0)
-            alphas = alphas * np.pi/180.0
+            # alphas = np.arange(0.0, 45.0, 15.0) * np.pi/180.0
+            # 0, 15, 30, ..., 165
+            alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
             nAlphas = len(alphas)
             data = []
 
             for k in range(0, nAlphas):
                 alpha = alphas[k]
                 H, s = get_directional_H(alpha, delta, z, zs)
-                entr_img = entropy(H, square(9))  # entropy = entropyfilt(H)
-                data.append(DataStruct(H=H, J=entr_img, s=s))
+                ent = entropy(H, square(9))
+                # H=curvature, J=entropy, s=slope
+                data.append(DataStruct(H=H, J=ent, s=s))
 
-            nAll = sz[0]*sz[1]
+            Js = np.zeros(nAlphas)
+            counter = 0
+            dCounter = 100000
+            nAll = np.prod(sz)
             with Bar('Assembling an image from entropy minimae', max=nAll*nDls) as subbar:
-                Js = np.zeros(nAlphas)
-                counter = 0
-                dCounter = 100000
-
                 # aspects
-                A = 0 * H
+                A = np.zeros(H.shape)
                 for i in range(0, sz[0]):
                     for j in range(0, sz[1]):
-                        if counter % dCounter == 0:
+                        if np.mod(counter, dCounter) == 0:
                             subbar.next()
                         counter = counter + 1
 
                         for k in range(1, nAlphas):
                             Js[k] = data[k].J[i, j]
 
-                        k = int(min(Js))
-                        H[i, j] = data[k].J[i, j]
+                        k = np.min(Js).astype(int)
+                        H[i, j] = data[k].H[i, j]
                         A[i, j] = k
                         s[i, j] = data[k].s[i, j]
 
@@ -93,13 +96,13 @@ def run(mat_fname, m=0.03292):
             indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
             indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
 
-    indsXUsed = np.sort(np.unique(indsXUsed), axis=0)
-    indsYUsed = np.sort(np.unique(indsYUsed), axis=0)
-    H = HFinal[indsLx][:, indsLy]
+    indsXUsed = np.sort(np.unique(indsXUsed))
+    indsYUsed = np.sort(np.unique(indsYUsed))
+    H = HFinal[indsXUsed][:, indsYUsed]
     Hfinal = None
-    A = AFinal[indsLx][:, indsLy]
+    A = AFinal[indsXUsed][:, indsYUsed]
     Afinal = None
-    s = sFinal[indsLx][:, indsLy]
+    s = sFinal[indsXUsed][:, indsYUsed]
     sFinal = None
     mask = mask[indsXUsed][:, indsYUsed]
 
@@ -112,11 +115,11 @@ def run(mat_fname, m=0.03292):
     Htemp = None
 
     # mask the margins away from the histograms
-    fk = fk / np.trapz(kappaBins, fk)
-    cfk = np.cumsum(fk) / sum(fk)
+    fk = fk / np.trapz(fk, kappaBins)
+    cfk = np.cumsum(fk) / np.sum(fk)
     eps = 0.05
-    i1 = min(abs(cfk-eps))
-    i2 = min(abs(cfk-(1-eps)))
+    i1 = np.min(np.abs(cfk-eps))
+    i2 = np.min(np.abs(cfk-(1-eps)))
     Hmin = kappaBins[i1]
     Hmax = kappaBins[i2]  # 90 % of values within [Hmin,Hmax]
 
@@ -124,10 +127,10 @@ def run(mat_fname, m=0.03292):
     stemp = sTemp[inds]
     [fs, sBins] = np.histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
-    cfs = np.cumsum(fs) / sum(fs)
+    cfs = np.cumsum(fs) / np.sum(fs)
     eps = 0.005
-    i3 = min(abs(cfs-eps))
-    i4 = min(abs(cfs-(1-eps)))
+    i3 = np.min(np.abs(cfs-eps))
+    i4 = np.min(np.abs(cfs-(1-eps)))
     sMin = sBins[i3]
     sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
