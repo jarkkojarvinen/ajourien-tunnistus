@@ -104,9 +104,9 @@ def run(mat_fname, m=0.03292):
     mask = mask[indsXUsed][:, indsYUsed]
 
     # mask the non-target zone away from the histograms
-    m = np.reshape(mask, (np.prod(mask.shape), 1))
-    inds = m.ravel().nonzero()
-    Htemp = np.reshape(H, (np.prod(H.shape), 1))
+    m = np.reshape(mask, (np.prod(mask.shape), 1)).flatten()
+    inds = m.ravel().nonzero()[0]
+    Htemp = np.reshape(H, (np.prod(H.shape), 1)).flatten()
     Htemp = Htemp[inds]
     [fk, kappaBins] = np.histogram(Htemp, 80)
     Htemp = None
