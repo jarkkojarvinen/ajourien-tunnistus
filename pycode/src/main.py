@@ -39,8 +39,8 @@ def run(mat_fname, m=0.03292):
     nDls = len(dls)
 
     z = None
-    HFinal = np.zeros(sz0)
-    AFinal = np.zeros(sz0)
+    Hfinal = np.zeros(sz0)
+    Afinal = np.zeros(sz0)
     sFinal = np.zeros(sz0)
     indsXUsed = []
     indsYUsed = []
@@ -90,18 +90,18 @@ def run(mat_fname, m=0.03292):
                         A[i, j] = k
                         s[i, j] = data[k].s[i, j]
 
-            HFinal[indsLx][:, indsLy] = H
-            AFinal[indsLx][:, indsLy] = A
+            Hfinal[indsLx][:, indsLy] = H
+            Afinal[indsLx][:, indsLy] = A
             sFinal[indsLx][:, indsLy] = s
             indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
             indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
 
     indsXUsed = np.sort(np.unique(indsXUsed))
     indsYUsed = np.sort(np.unique(indsYUsed))
-    H = HFinal[indsXUsed][:, indsYUsed]
-    HFinal = None
-    A = AFinal[indsXUsed][:, indsYUsed]
-    AFinal = None
+    H = Hfinal[indsXUsed][:, indsYUsed]
+    Hfinal = None
+    A = Afinal[indsXUsed][:, indsYUsed]
+    Afinal = None
     s = sFinal[indsXUsed][:, indsYUsed]
     sFinal = None
     mask = mask[indsXUsed][:, indsYUsed]
