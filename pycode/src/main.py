@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.io as sio
-from scipy import integrate
 from skimage.filters.rank import entropy
-from skimage.morphology import disk, square
+from skimage.morphology import square
 from progress.bar import Bar
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
+from .utils.math_utils import histogram
 
 
 def run(mat_fname, m=0.03292):
@@ -99,9 +99,9 @@ def run(mat_fname, m=0.03292):
     indsXUsed = np.sort(np.unique(indsXUsed))
     indsYUsed = np.sort(np.unique(indsYUsed))
     H = HFinal[indsXUsed][:, indsYUsed]
-    Hfinal = None
+    HFinal = None
     A = AFinal[indsXUsed][:, indsYUsed]
-    Afinal = None
+    AFinal = None
     s = sFinal[indsXUsed][:, indsYUsed]
     sFinal = None
     mask = mask[indsXUsed][:, indsYUsed]
@@ -111,11 +111,11 @@ def run(mat_fname, m=0.03292):
     inds = m.ravel().nonzero()[0]
     Htemp = np.reshape(H, (np.prod(H.shape), 1)).flatten()
     Htemp = Htemp[inds]
-    [fk, kappaBins] = np.histogram(Htemp, 80)
+    [fk, kappaBins] = histogram(Htemp, 80)
     Htemp = None
 
     # mask the margins away from the histograms
-    fk = fk / np.trapz(fk, kappaBins)
+    fk = fk / np.trapz(kappaBins, fk)
     cfk = np.cumsum(fk) / np.sum(fk)
     eps = 0.05
     i1 = np.min(np.abs(cfk-eps))
@@ -124,8 +124,8 @@ def run(mat_fname, m=0.03292):
     Hmax = kappaBins[i2]  # 90 % of values within [Hmin,Hmax]
 
     sTemp = np.reshape(s, (np.prod(s.shape), 1))
-    stemp = sTemp[inds]
-    [fs, sBins] = np.histogram(sTemp, 80)
+    sTemp = sTemp[inds]
+    [fs, sBins] = histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
     cfs = np.cumsum(fs) / np.sum(fs)
     eps = 0.005
