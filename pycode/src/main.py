@@ -3,6 +3,7 @@ import scipy.io as sio
 from skimage.filters.rank import entropy
 from skimage.morphology import square
 from progress.bar import Bar
+import matplotlib.pyplot as plt
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
@@ -52,7 +53,7 @@ def run(mat_fname, m=0.03292):
             dl = dls[l]
             indsLx = np.arange(dl[0], sz0[0], kSkip)
             indsLy = np.arange(dl[1], sz0[1], kSkip)
-            z = z0[indsLx][:, indsLy]
+            z = z0[np.ix_(indsLx, indsLy)]
             sz = z.shape
 
             zs = init_Zs(z)
@@ -90,21 +91,21 @@ def run(mat_fname, m=0.03292):
                         A[i, j] = k
                         s[i, j] = data[k].s[i, j]
 
-            Hfinal[indsLx][:, indsLy] = H
-            Afinal[indsLx][:, indsLy] = A
-            sFinal[indsLx][:, indsLy] = s
+            Hfinal[np.ix_(indsLx, indsLy)] = H
+            Afinal[np.ix_(indsLx, indsLy)] = A
+            sFinal[np.ix_(indsLx, indsLy)] = s
             indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
             indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
 
     indsXUsed = np.sort(np.unique(indsXUsed))
     indsYUsed = np.sort(np.unique(indsYUsed))
-    H = Hfinal[indsXUsed][:, indsYUsed]
+    H = Hfinal[np.ix_(indsXUsed, indsYUsed)]
     Hfinal = None
-    A = Afinal[indsXUsed][:, indsYUsed]
+    A = Afinal[np.ix_(indsXUsed, indsYUsed)]
     Afinal = None
-    s = sFinal[indsXUsed][:, indsYUsed]
+    s = sFinal[np.ix_(indsXUsed, indsYUsed)]
     sFinal = None
-    mask = mask[indsXUsed][:, indsYUsed]
+    mask = mask[np.ix_(indsXUsed, indsYUsed)]
 
     # mask the non-target zone away from the histograms
     m = np.reshape(mask, (np.prod(mask.shape), 1)).flatten()
@@ -118,8 +119,8 @@ def run(mat_fname, m=0.03292):
     fk = fk / np.trapz(kappaBins, fk)
     cfk = np.cumsum(fk) / np.sum(fk)
     eps = 0.05
-    i1 = np.min(np.abs(cfk-eps))
-    i2 = np.min(np.abs(cfk-(1-eps)))
+    i1 = np.argmin(np.abs(cfk-eps))
+    i2 = np.argmin(np.abs(cfk-(1-eps)))
     Hmin = kappaBins[i1]
     Hmax = kappaBins[i2]  # 90 % of values within [Hmin,Hmax]
 
@@ -129,23 +130,24 @@ def run(mat_fname, m=0.03292):
     fs = fs / np.trapz(sBins, fs)
     cfs = np.cumsum(fs) / np.sum(fs)
     eps = 0.005
-    i3 = np.min(np.abs(cfs-eps))
-    i4 = np.min(np.abs(cfs-(1-eps)))
+    i3 = np.argmin(np.abs(cfs-eps))
+    i4 = np.argmin(np.abs(cfs-(1-eps)))
     sMin = sBins[i3]
     sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
-    # figure(1);
-    #     subplot(1,2,1); 
-    #     semilogy(kappaBins,fk);
-    #     xlabel('\kappa (m^{-1}'); 
-    #     ylabel('freq (m)'); 
-    #     title('\kappa histogram');
-    #     subplot(1,2,2); 
-    #     semilogy(sBins,fs);
-    #     xlabel('slope (1)'); 
-    #     ylabel('freq. (1)'); 
-    #     title('slope histogram');
-    #     set(findall(gcf,'-property','FontSize'),'FontSize',12);
+    # Figure 1
+    fig, ((ax1, ax2)) = plt.subplots(nrows=1, ncols=2)
+    ax1.semilogy(kappaBins, fk)
+    ax1.set_xlabel('\kappa (m^{-1}')
+    ax1.set_ylabel('freq (m)')
+    ax1.set_title('\kappa histogram')
+    ax2.semilogy(sBins, fs)
+    ax2.set_xlabel('slope (1)')
+    ax2.set_ylabel('freq. (1)')
+    ax2.set_title('slope histogram')
+    fig.tight_layout()
+    plt.show()
+    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
     # figure(2);
     #     imshow(H); 
