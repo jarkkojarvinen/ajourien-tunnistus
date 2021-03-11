@@ -135,26 +135,38 @@ def run(mat_fname, m=0.03292):
     sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
     # figure(1);
-    #     subplot(1,2,1); semilogy(kappaBins,fk);
-    #     xlabel('\kappa (m^{-1}'); ylabel('freq (m)'); title('\kappa histogram');
-    #     subplot(1,2,2); semilogy(sBins,fs);
-    #     xlabel('slope (1)'); ylabel('freq. (1)'); title('slope histogram');
+    #     subplot(1,2,1); 
+    #     semilogy(kappaBins,fk);
+    #     xlabel('\kappa (m^{-1}'); 
+    #     ylabel('freq (m)'); 
+    #     title('\kappa histogram');
+    #     subplot(1,2,2); 
+    #     semilogy(sBins,fs);
+    #     xlabel('slope (1)'); 
+    #     ylabel('freq. (1)'); 
+    #     title('slope histogram');
     #     set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
     # figure(2);
-    #     imshow(H); caxis([Hmin,Hmax]); h= colorbar;
+    #     imshow(H); 
+    #     caxis([Hmin,Hmax]); 
+    #     h= colorbar;
     #     h.Title.String= '\kappa (m^{-1})';
     #     title(['curvature with \delta= ',sprintf('%.2f',delta), ' (m)']);
 
     # figure(3);
-    #     imshow(A); caxis([min(min(A)),max(max(A))]); h= colorbar;
+    #     imshow(A); 
+    #     caxis([min(min(A)),max(max(A))]); 
+    #     h= colorbar;
     #     h.Title.String= 'k of \alpha_k (1...8)';
     #     title('aspect  index k of the aspect \alpha_k');
     #     set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
     # figure(4);
-    #     imshow(s); caxis([0.5,1.0]); % caxis([sMin,sMax]);
-    #     h= colorbar; h.YDir= 'reverse';
+    #     imshow(s); 
+    #     caxis([0.5,1.0]); % caxis([sMin,sMax]);
+    #     h= colorbar; 
+    #     h.YDir= 'reverse';
     #     h.Title.String= 'slope (1)';
     #     title(['slope with \delta= ',sprintf('%.2f',delta), ' (1)']);
     #     set(findall(gcf,'-property','FontSize'),'FontSize',12);

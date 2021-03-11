@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def histogram(x, nbins):
+def histogram(x, nbins=10):
     """
     Matlab hist(x, nbins) equivalent implementation.
     Returns (counts, center).
@@ -13,7 +13,6 @@ def histogram(x, nbins):
     """
     bins = np.linspace(np.min(x), np.max(x), nbins, endpoint=False)
     delta = (bins[1] - bins[0])/2
-    _, bins = np.histogram(x, bins=bins)
-    count, _ = np.histogram(x, nbins)
-    bins = np.round(bins+delta, decimals=4)
+    bins = np.round(bins + delta, decimals=4)
+    count, _ = np.histogram(x, bins=nbins)
     return count, bins
