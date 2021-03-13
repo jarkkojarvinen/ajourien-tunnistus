@@ -136,6 +136,7 @@ def run(mat_fname, m=0.03292):
     sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
     # Figure 1
+    plt.rcParams.update({'font.size': 12})
     fig1, ((f1ax1, f1ax2)) = plt.subplots(nrows=1, ncols=2)
     f1ax1.set_xscale('log')
     f1ax1.set_yscale('log')
@@ -150,7 +151,6 @@ def run(mat_fname, m=0.03292):
     f1ax2.set_xlabel('slope (1)')
     f1ax2.set_ylabel('freq. (1)')
     f1ax2.set_title('slope histogram')
-    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
     fig2, f2ax = plt.subplots()
     pos2 = f2ax.imshow(H, cmap='gray', vmin=Hmin, vmax=Hmax)
@@ -159,18 +159,21 @@ def run(mat_fname, m=0.03292):
     f2ax.set_title(fr'curvature with $\delta$={delta:.2f} (m)')
 
     fig3, f3ax = plt.subplots()
-    amin = 0 # min(min(A)) # TODO
-    amax = 1 #max(max(A)) # TODO
+    amin = min(min(A))
+    amax = max(max(A))
     pos3 = f3ax.imshow(A, cmap='gray', vmin=amin, vmax=amax)
     colorbar3 = fig3.colorbar(pos3, ax=f3ax)
     colorbar3.set_label(r'k of $\alpha{k}$ (1...8)')
     f3ax.set_title(r'aspect index k of the aspect $\alpha_{k}$')
-    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
     fig4, f4ax = plt.subplots()
     pos4 = f4ax.imshow(s, cmap='gray', vmin=0.5, vmax=1)
     colorbar4 = fig4.colorbar(pos4, ax=f4ax)
-    # colorbar4.YDir = 'reverse' # TODO
+    f4ax.invert_yaxis()
     colorbar4.set_label('slope (1)')
     f4ax.set_title(fr'slope with $\delta$={delta:.2f} (1)')
-    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
+
+    fig1.savefig("figure1.png")
+    fig2.savefig("figure2.png")
+    fig3.savefig("figure3.png")
+    fig4.savefig("figure4.png")
