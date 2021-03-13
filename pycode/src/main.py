@@ -24,7 +24,7 @@ def run(mat_fname, m=0.03292):
     temp = None
 
     # can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
-    kSkip = 128
+    kSkip = 256
     # (m) grid constant
     delta = kSkip * m
 
@@ -136,39 +136,41 @@ def run(mat_fname, m=0.03292):
     sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
     # Figure 1
-    fig, ((ax1, ax2)) = plt.subplots(nrows=1, ncols=2)
-    ax1.semilogy(kappaBins, fk)
-    ax1.set_xlabel('\kappa (m^{-1}')
-    ax1.set_ylabel('freq (m)')
-    ax1.set_title('\kappa histogram')
-    ax2.semilogy(sBins, fs)
-    ax2.set_xlabel('slope (1)')
-    ax2.set_ylabel('freq. (1)')
-    ax2.set_title('slope histogram')
-    fig.tight_layout()
-    plt.show()
+    fig1, ((f1ax1, f1ax2)) = plt.subplots(nrows=1, ncols=2)
+    f1ax1.set_xscale('log')
+    f1ax1.set_yscale('log')
+    f1ax1.semilogy(kappaBins, fk)
+    f1ax1.set_xlabel(r'$\kappa$ (m$^{-1}$)')
+    f1ax1.set_ylabel('freq (m)')
+    f1ax1.set_title(r'$\kappa$ histogram')
+
+    f1ax2.set_xscale('log')
+    f1ax2.set_yscale('log')
+    f1ax2.semilogy(sBins, fs)
+    f1ax2.set_xlabel('slope (1)')
+    f1ax2.set_ylabel('freq. (1)')
+    f1ax2.set_title('slope histogram')
     # set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
-    # figure(2);
-    #     imshow(H); 
-    #     caxis([Hmin,Hmax]); 
-    #     h= colorbar;
-    #     h.Title.String= '\kappa (m^{-1})';
-    #     title(['curvature with \delta= ',sprintf('%.2f',delta), ' (m)']);
+    fig2, f2ax = plt.subplots()
+    pos2 = f2ax.imshow(H, cmap='gray', vmin=Hmin, vmax=Hmax)
+    colorbar2 = fig2.colorbar(pos2, ax=f2ax)
+    colorbar2.set_label(r'$\kappa$ (m$^{-1}$)')
+    f2ax.set_title(fr'curvature with $\delta$={delta:.2f} (m)')
 
-    # figure(3);
-    #     imshow(A); 
-    #     caxis([min(min(A)),max(max(A))]); 
-    #     h= colorbar;
-    #     h.Title.String= 'k of \alpha_k (1...8)';
-    #     title('aspect  index k of the aspect \alpha_k');
-    #     set(findall(gcf,'-property','FontSize'),'FontSize',12);
+    fig3, f3ax = plt.subplots()
+    amin = 0 # min(min(A)) # TODO
+    amax = 1 #max(max(A)) # TODO
+    pos3 = f3ax.imshow(A, cmap='gray', vmin=amin, vmax=amax)
+    colorbar3 = fig3.colorbar(pos3, ax=f3ax)
+    colorbar3.set_label(r'k of $\alpha{k}$ (1...8)')
+    f3ax.set_title(r'aspect index k of the aspect $\alpha_{k}$')
+    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
 
-    # figure(4);
-    #     imshow(s); 
-    #     caxis([0.5,1.0]); % caxis([sMin,sMax]);
-    #     h= colorbar; 
-    #     h.YDir= 'reverse';
-    #     h.Title.String= 'slope (1)';
-    #     title(['slope with \delta= ',sprintf('%.2f',delta), ' (1)']);
-    #     set(findall(gcf,'-property','FontSize'),'FontSize',12);
+    fig4, f4ax = plt.subplots()
+    pos4 = f4ax.imshow(s, cmap='gray', vmin=0.5, vmax=1)
+    colorbar4 = fig4.colorbar(pos4, ax=f4ax)
+    # colorbar4.YDir = 'reverse' # TODO
+    colorbar4.set_label('slope (1)')
+    f4ax.set_title(fr'slope with $\delta$={delta:.2f} (1)')
+    # set(findall(gcf,'-property','FontSize'),'FontSize',12);
