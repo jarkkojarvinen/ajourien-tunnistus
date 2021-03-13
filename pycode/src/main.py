@@ -24,7 +24,7 @@ def run(mat_fname, m=0.03292):
     temp = None
 
     # can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
-    kSkip = 256
+    kSkip = 64
     # (m) grid constant
     delta = kSkip * m
 
@@ -159,8 +159,8 @@ def run(mat_fname, m=0.03292):
     f2ax.set_title(fr'curvature with $\delta$={delta:.2f} (m)')
 
     fig3, f3ax = plt.subplots()
-    amin = min(min(A))
-    amax = max(max(A))
+    amin = np.min(np.min(A))
+    amax = np.max(np.max(A))
     pos3 = f3ax.imshow(A, cmap='gray', vmin=amin, vmax=amax)
     colorbar3 = fig3.colorbar(pos3, ax=f3ax)
     colorbar3.set_label(r'k of $\alpha{k}$ (1...8)')
