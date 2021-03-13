@@ -2,7 +2,7 @@ disp('reading stuff');
 temp= load('../data/z2.mat'); z0= temp.z; sz0= size(z0); 
 mask= temp.mask; clear temp; 
 
-kSkip= 128; % can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
+kSkip= 64; % can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
 delta= kSkip*0.03292; % (m) grid constant
 if kSkip == 1
     dls= [1,1];
