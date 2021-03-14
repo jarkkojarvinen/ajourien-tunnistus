@@ -3,11 +3,15 @@ import scipy.io as sio
 from skimage.filters.rank import entropy
 from skimage.morphology import square
 from tqdm.auto import trange
-import matplotlib.pyplot as plt
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
 from .utils.math_utils import histogram
+from .utils.image_utils import (
+    create_ks_histograms,
+    create_curvature_image,
+    create_aspect_index_image,
+    create_slope_image)
 
 
 def run(mat_fname, m=0.03292):
@@ -15,7 +19,7 @@ def run(mat_fname, m=0.03292):
     mat_fname = file path to mat file
     m = grid constant. Default value 0.03292
     """
-    print('Reading stuff...')
+    print(f'Reading {mat_fname}...')
     temp = sio.loadmat(mat_fname)
     z0 = temp['z'].astype(int)
     sz0 = z0.shape
@@ -46,7 +50,6 @@ def run(mat_fname, m=0.03292):
     indsXUsed = []
     indsYUsed = []
 
-    # with Bar('Processing directional curvatures', max=nDls) as bar:
     for l in trange(nDls, desc='Processing directional curvatures'):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
@@ -99,7 +102,7 @@ def run(mat_fname, m=0.03292):
 
     # mask the non-target zone away from the histograms
     m = np.reshape(mask, (np.prod(mask.shape), 1)).flatten()
-    inds = m.ravel().nonzero()[0]
+    inds = m.nonzero()
     Htemp = np.reshape(H, (np.prod(H.shape), 1)).flatten()
     Htemp = Htemp[inds]
     [fk, kappaBins] = histogram(Htemp, 80)
@@ -118,53 +121,17 @@ def run(mat_fname, m=0.03292):
     sTemp = sTemp[inds]
     [fs, sBins] = histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
-    cfs = np.cumsum(fs) / np.sum(fs)
-    eps = 0.005
-    i3 = np.argmin(np.abs(cfs-eps))
-    i4 = np.argmin(np.abs(cfs-(1-eps)))
-    sMin = sBins[i3]
-    sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
+    # TODO: sMin and sMax aren't used so these aren't needed
+    #cfs = np.cumsum(fs) / np.sum(fs)
+    #eps = 0.005
+    #i3 = np.argmin(np.abs(cfs-eps))
+    #i4 = np.argmin(np.abs(cfs-(1-eps)))
+    #sMin = sBins[i3]
+    # sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
-    # Figure 1
-    plt.rcParams.update({'font.size': 12})
-    fig1, ((f1ax1, f1ax2)) = plt.subplots(nrows=1, ncols=2)
-    f1ax1.set_xscale('log')
-    f1ax1.set_yscale('log')
-    f1ax1.semilogy(kappaBins, fk)
-    f1ax1.set_xlabel(r'$\kappa$ (m$^{-1}$)')
-    f1ax1.set_ylabel('freq (m)')
-    f1ax1.set_title(r'$\kappa$ histogram')
+    create_ks_histograms(fk, kappaBins, fs, sBins)
+    create_curvature_image(delta, H, Hmin, Hmax)
+    create_aspect_index_image(A)
+    create_slope_image(delta, s)
 
-    f1ax2.set_xscale('log')
-    f1ax2.set_yscale('log')
-    f1ax2.semilogy(sBins, fs)
-    f1ax2.set_xlabel('slope (1)')
-    f1ax2.set_ylabel('freq. (1)')
-    f1ax2.set_title('slope histogram')
-
-    fig2, f2ax = plt.subplots()
-    pos2 = f2ax.imshow(H, cmap='gray', vmin=Hmin, vmax=Hmax)
-    colorbar2 = fig2.colorbar(pos2, ax=f2ax)
-    colorbar2.set_label(r'$\kappa$ (m$^{-1}$)')
-    f2ax.set_title(fr'curvature with $\delta$={delta:.2f} (m)')
-
-    fig3, f3ax = plt.subplots()
-    amin = np.min(np.min(A))
-    amax = np.max(np.max(A))
-    pos3 = f3ax.imshow(A, cmap='gray', vmin=amin, vmax=amax)
-    colorbar3 = fig3.colorbar(pos3, ax=f3ax)
-    colorbar3.set_label(r'k of $\alpha{k}$ (1...8)')
-    f3ax.set_title(r'aspect index k of the aspect $\alpha_{k}$')
-
-    fig4, f4ax = plt.subplots()
-    pos4 = f4ax.imshow(s, cmap='gray', vmin=0.5, vmax=1)
-    colorbar4 = fig4.colorbar(pos4, ax=f4ax)
-    f4ax.invert_yaxis()
-    colorbar4.set_label('slope (1)')
-    f4ax.set_title(fr'slope with $\delta$={delta:.2f} (1)')
-
-    fig1.savefig("figure1.png")
-    fig2.savefig("figure2.png")
-    fig3.savefig("figure3.png")
-    fig4.savefig("figure4.png")
-    
+    print("Ready.")

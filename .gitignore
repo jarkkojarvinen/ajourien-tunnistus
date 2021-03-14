@@ -5,7 +5,7 @@ data/dataSievi
 data/z1.mat
 data/z2.mat
 *.rar
-figure*.png
+*.png
 
 
 #### MATLAB ####
