@@ -33,7 +33,7 @@ def run(mat_fname, m=0.03292):
     delta = kSkip * m
 
     if kSkip == 1:
-        dls = [1, 1]
+        dls = [0, 0]
     else:
         # kSkip has to be odd!
         l = int(kSkip / 2)
@@ -41,16 +41,14 @@ def run(mat_fname, m=0.03292):
                         [l, 0],
                         [0, l],
                         [l, l]])
-    nDls = len(dls)
-
-    z = None
+    
     Hfinal = np.zeros(sz0)
     Afinal = np.zeros(sz0)
     sFinal = np.zeros(sz0)
     indsXUsed = []
     indsYUsed = []
 
-    for l in trange(nDls, desc='Processing directional curvatures'):
+    for l in trange(len(dls), desc='Processing directional curvatures'):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
@@ -119,7 +117,7 @@ def run(mat_fname, m=0.03292):
 
     sTemp = np.reshape(s, (np.prod(s.shape), 1))
     sTemp = sTemp[inds]
-    [fs, sBins] = histogram(sTemp, 80)
+    fs, sBins = histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
     # TODO: sMin and sMax aren't used so these aren't needed
     #cfs = np.cumsum(fs) / np.sum(fs)
@@ -127,7 +125,7 @@ def run(mat_fname, m=0.03292):
     #i3 = np.argmin(np.abs(cfs-eps))
     #i4 = np.argmin(np.abs(cfs-(1-eps)))
     #sMin = sBins[i3]
-    # sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
+    #sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
     create_ks_histograms(fk, kappaBins, fs, sBins)
     create_curvature_image(delta, H, Hmin, Hmax)

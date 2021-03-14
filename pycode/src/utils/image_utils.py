@@ -7,6 +7,7 @@ def create_ks_histograms(fk, kappaBins, fs, sBins):
     Figure 1
     """
     # TODO: käyrät puuttuu
+    print("Creating kappa and slope histograms...")
     plt.rcParams.update({'font.size': 12})
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
     ax1.semilogy(kappaBins, fk)
@@ -27,6 +28,7 @@ def create_curvature_image(delta, H, Hmin, Hmax):
     """
     Figure 2
     """
+    print("Creating curvature image...")
     plt.rcParams.update({'font.size': 12})
     fig, ax = plt.subplots()
     ax.set_yticks([])
@@ -45,6 +47,7 @@ def create_aspect_index_image(A):
     Figure 3
     """
     # TODO: Suttuinen ja scale pitäis olla 1...12
+    print("Creating aspect index image...")
     plt.rcParams.update({'font.size': 12})
     fig, ax = plt.subplots()
     ax.set_yticks([])
@@ -64,6 +67,7 @@ def create_slope_image(delta, s, sMin=0.5, sMax=1.0):
     """
     Figure 4
     """
+    print("Creating slope image...")
     plt.rcParams.update({'font.size': 12})
     fig, ax = plt.subplots()
     ax.set_yticks([])
