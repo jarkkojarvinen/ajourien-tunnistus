@@ -2,7 +2,7 @@ import numpy as np
 import scipy.io as sio
 from skimage.filters.rank import entropy
 from skimage.morphology import square
-from progress.bar import Bar
+from tqdm.auto import trange
 import matplotlib.pyplot as plt
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
@@ -46,56 +46,46 @@ def run(mat_fname, m=0.03292):
     indsXUsed = []
     indsYUsed = []
 
-    with Bar('Processing directional curvatures', max=nDls) as bar:
-        for l in range(0, nDls):
-            # work amount...
-            bar.next()
-            dl = dls[l]
-            indsLx = np.arange(dl[0], sz0[0], kSkip)
-            indsLy = np.arange(dl[1], sz0[1], kSkip)
-            z = z0[np.ix_(indsLx, indsLy)]
-            sz = z.shape
+    # with Bar('Processing directional curvatures', max=nDls) as bar:
+    for l in trange(nDls, desc='Processing directional curvatures'):
+        dl = dls[l]
+        indsLx = np.arange(dl[0], sz0[0], kSkip)
+        indsLy = np.arange(dl[1], sz0[1], kSkip)
+        z = z0[np.ix_(indsLx, indsLy)]
+        sz = z.shape
 
-            zs = init_Zs(z)
-            # alphas = np.arange(0.0, 45.0, 15.0) * np.pi/180.0
-            # 0, 15, 30, ..., 165
-            alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
-            nAlphas = len(alphas)
-            data = []
+        zs = init_Zs(z)
+        # alphas = np.arange(0.0, 45.0, 15.0) * np.pi/180.0
+        # 0, 15, 30, ..., 165
+        alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
+        nAlphas = len(alphas)
+        data = []
 
-            for k in range(0, nAlphas):
-                alpha = alphas[k]
-                H, s = get_directional_H(alpha, delta, z, zs)
-                ent = entropy(H, square(9))
-                # H=curvature, J=entropy, s=slope
-                data.append(DataStruct(H=H, J=ent, s=s))
+        for k in range(0, nAlphas):
+            alpha = alphas[k]
+            H, s = get_directional_H(alpha, delta, z, zs)
+            ent = entropy(H, square(9))
+            # H=curvature, J=entropy, s=slope
+            data.append(DataStruct(H=H, J=ent, s=s))
 
-            Js = np.zeros(nAlphas)
-            counter = 0
-            dCounter = 100000
-            nAll = np.prod(sz)
-            with Bar('Assembling an image from entropy minimae', max=nAll*nDls) as subbar:
-                # aspects
-                A = np.zeros(H.shape)
-                for i in range(0, sz[0]):
-                    for j in range(0, sz[1]):
-                        if np.mod(counter, dCounter) == 0:
-                            subbar.next()
-                        counter = counter + 1
+        Js = np.zeros(nAlphas)
+        # aspects
+        A = np.zeros(H.shape)
+        for i in trange(sz[0], desc='Assembling an image from entropy minimae'):
+            for j in range(0, sz[1]):
+                for k in range(0, nAlphas):
+                    Js[k] = data[k].J[i, j]
 
-                        for k in range(1, nAlphas):
-                            Js[k] = data[k].J[i, j]
+                k = np.min(Js).astype(int)
+                H[i, j] = data[k].H[i, j]
+                A[i, j] = k
+                s[i, j] = data[k].s[i, j]
 
-                        k = np.min(Js).astype(int)
-                        H[i, j] = data[k].H[i, j]
-                        A[i, j] = k
-                        s[i, j] = data[k].s[i, j]
-
-            Hfinal[np.ix_(indsLx, indsLy)] = H
-            Afinal[np.ix_(indsLx, indsLy)] = A
-            sFinal[np.ix_(indsLx, indsLy)] = s
-            indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
-            indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
+        Hfinal[np.ix_(indsLx, indsLy)] = H
+        Afinal[np.ix_(indsLx, indsLy)] = A
+        sFinal[np.ix_(indsLx, indsLy)] = s
+        indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
+        indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
 
     indsXUsed = np.sort(np.unique(indsXUsed))
     indsYUsed = np.sort(np.unique(indsYUsed))
@@ -177,3 +167,4 @@ def run(mat_fname, m=0.03292):
     fig2.savefig("figure2.png")
     fig3.savefig("figure3.png")
     fig4.savefig("figure4.png")
+    

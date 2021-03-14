@@ -2,5 +2,5 @@ numpy
 scipy
 matplotlib
 scikit-image
-progress
+tqdm
 pydantic
