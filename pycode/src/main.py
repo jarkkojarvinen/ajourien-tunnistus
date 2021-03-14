@@ -105,7 +105,7 @@ def run(mat_fname, m=0.03292):
     inds = m.nonzero()
     Htemp = np.reshape(H, (np.prod(H.shape), 1)).flatten()
     Htemp = Htemp[inds]
-    [fk, kappaBins] = histogram(Htemp, 80)
+    fk, kappaBins = histogram(Htemp, 80)
     Htemp = None
 
     # mask the margins away from the histograms
