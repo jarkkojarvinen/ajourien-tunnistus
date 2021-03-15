@@ -2,7 +2,7 @@ import numpy as np
 import scipy.io as sio
 from skimage.filters.rank import entropy
 from skimage.morphology import square
-from tqdm.auto import trange
+from tqdm import tqdm
 from .initZs import init_Zs
 from .getDirectionalH import get_directional_H
 from .schemas.datastruct import DataStruct
@@ -53,7 +53,7 @@ def run(mat_fname, m=0.03292):
     indsXUsed = np.array([], dtype='int')
     indsYUsed = np.array([], dtype='int')
 
-    for l in trange(nDls, desc='Processing directional curvatures'):
+    for l in tqdm(np.arange(nDls), desc='Processing directional curvatures'):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
@@ -65,19 +65,20 @@ def run(mat_fname, m=0.03292):
         # 0, 15, 30, ..., 165
         alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
         nAlphas = alphas.size
-        data = [None] * nAlphas
+        data = [DataStruct] * nAlphas
 
         for k in np.arange(0, nAlphas):
             alpha = alphas[k]
             H, s = get_directional_H(alpha, delta, z, zs)
-            ent = entropy(H, square(9))
-            # H=curvature, J=entropy, s=slope
-            data[k] = DataStruct(H=H, J=ent, s=s)
+            J = entropy(H, square(9))
+            data[k].H = H  # H=curvature
+            data[k].J = J  # J=entropy
+            data[k].s = s  # s=slope
 
         Js = np.zeros(nAlphas)
         # aspects
         A = np.zeros(H.shape)
-        for i in trange(sz[0], desc='Assembling an image from entropy minimae'):
+        for i in tqdm(np.arange(sz[0]), desc='Assembling an image from entropy minimae'):
             for j in np.arange(0, sz[1]):
                 for k in np.arange(0, nAlphas):
                     Js[k] = data[k].J[i, j]
