@@ -19,13 +19,7 @@ def run(mat_fname, m=0.03292):
     mat_fname = file path to mat file
     m = grid constant. Default value 0.03292
     """
-    print(f'Reading {mat_fname}...')
-    temp = sio.loadmat(mat_fname)
-    z0 = temp['z'].astype(int)
-    sz0 = z0.shape
-    mask = temp['mask'].astype(int)
-    # Clear temp
-    temp = None
+    z0, mask = read_mat_file(mat_fname)
 
     # can be 1,2,4,6,8,... (no odd numbers 3,5,... allowed)
     kSkip = 64
@@ -33,7 +27,7 @@ def run(mat_fname, m=0.03292):
     delta = kSkip * m
 
     if kSkip == 1:
-        dls = [0, 0]
+        dls = np.array([[0, 0]])
     else:
         # kSkip has to be odd!
         l = int(kSkip / 2)
@@ -41,7 +35,8 @@ def run(mat_fname, m=0.03292):
                         [l, 0],
                         [0, l],
                         [l, l]])
-    
+
+    sz0 = z0.shape
     Hfinal = np.zeros(sz0)
     Afinal = np.zeros(sz0)
     sFinal = np.zeros(sz0)
@@ -52,7 +47,7 @@ def run(mat_fname, m=0.03292):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
-        z = z0[np.ix_(indsLx, indsLy)]
+        z = z0[np.ix_(indsLx, indsLy)].copy()
         sz = z.shape
 
         zs = init_Zs(z)
@@ -60,24 +55,24 @@ def run(mat_fname, m=0.03292):
         # 0, 15, 30, ..., 165
         alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
         nAlphas = len(alphas)
-        data = []
+        data = [None] * nAlphas
 
-        for k in range(0, nAlphas):
+        for k in np.arange(0, nAlphas):
             alpha = alphas[k]
             H, s = get_directional_H(alpha, delta, z, zs)
             ent = entropy(H, square(9))
             # H=curvature, J=entropy, s=slope
-            data.append(DataStruct(H=H, J=ent, s=s))
+            data[k] = DataStruct(H=H, J=ent, s=s)
 
         Js = np.zeros(nAlphas)
         # aspects
         A = np.zeros(H.shape)
         for i in trange(sz[0], desc='Assembling an image from entropy minimae'):
-            for j in range(0, sz[1]):
-                for k in range(0, nAlphas):
+            for j in np.arange(0, sz[1]):
+                for k in np.arange(0, nAlphas):
                     Js[k] = data[k].J[i, j]
 
-                k = np.min(Js).astype(int)
+                k = Js.min().astype(int)
                 H[i, j] = data[k].H[i, j]
                 A[i, j] = k
                 s[i, j] = data[k].s[i, j]
@@ -90,11 +85,11 @@ def run(mat_fname, m=0.03292):
 
     indsXUsed = np.sort(np.unique(indsXUsed))
     indsYUsed = np.sort(np.unique(indsYUsed))
-    H = Hfinal[np.ix_(indsXUsed, indsYUsed)]
+    H = Hfinal[np.ix_(indsXUsed, indsYUsed)].copy()
     Hfinal = None
-    A = Afinal[np.ix_(indsXUsed, indsYUsed)]
+    A = Afinal[np.ix_(indsXUsed, indsYUsed)].copy()
     Afinal = None
-    s = sFinal[np.ix_(indsXUsed, indsYUsed)]
+    s = sFinal[np.ix_(indsXUsed, indsYUsed)].copy()
     sFinal = None
     mask = mask[np.ix_(indsXUsed, indsYUsed)]
 
@@ -125,7 +120,7 @@ def run(mat_fname, m=0.03292):
     #i3 = np.argmin(np.abs(cfs-eps))
     #i4 = np.argmin(np.abs(cfs-(1-eps)))
     #sMin = sBins[i3]
-    #sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
+    # sMax = sBins[i4]  # 90 % of values within [sMin,sMax]
 
     create_ks_histograms(fk, kappaBins, fs, sBins)
     create_curvature_image(delta, H, Hmin, Hmax)
@@ -133,3 +128,12 @@ def run(mat_fname, m=0.03292):
     create_slope_image(delta, s)
 
     print("Ready.")
+
+
+def read_mat_file(mat_fname):
+    print(f'Reading {mat_fname}...')
+    temp = sio.loadmat(mat_fname, variable_names=['z', 'mask'])
+    z0 = temp['z'].astype(int)
+    mask = temp['mask'].astype(int)
+    # Clear temptemp = None
+    return z0, mask

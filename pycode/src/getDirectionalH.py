@@ -8,7 +8,7 @@ def __calculate_lzb(u, z, zs, h):
     """
     uf = int(np.floor(u))
     uc = int(np.ceil(u))
-    t = u - uf
+    t = int(u - uf)
     zx = zs[uf].z * (1-t) + zs[uc].z * t
     beta = np.arctan2(zx - z, h)
     lx = h / np.cos(beta)

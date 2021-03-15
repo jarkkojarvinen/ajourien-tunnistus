@@ -13,7 +13,7 @@ def create_row_vector(start, end, pre=None, post=None):
         This call is equal with create_row_vector(1, 3, pre=1)
     NOTE: If both pre and post given then only pre will be set
     """
-    base_list = range(start, end+1)
+    base_list = np.arange(start, end+1)
     if pre is not None:
         return np.concatenate(([pre], base_list), axis=0)
     elif post is not None:
