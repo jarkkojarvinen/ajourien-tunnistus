@@ -10,7 +10,7 @@ def alpha2u(alpha):
 
     c = np.cos(alpha)
     s = np.sin(alpha)
-    scale = 1.0 / max(abs(c), abs(s))
+    scale = 1.0 / np.maximum(abs(c), abs(s))
     x = c * scale
     y = s * scale
     eps = 1.0e-8

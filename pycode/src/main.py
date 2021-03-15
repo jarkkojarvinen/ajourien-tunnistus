@@ -43,7 +43,7 @@ def run(mat_fname, m=0.03292):
     indsXUsed = []
     indsYUsed = []
 
-    for l in trange(len(dls), desc='Processing directional curvatures'):
+    for l in trange(dls.shape[0], desc='Processing directional curvatures'):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
@@ -54,7 +54,7 @@ def run(mat_fname, m=0.03292):
         # alphas = np.arange(0.0, 45.0, 15.0) * np.pi/180.0
         # 0, 15, 30, ..., 165
         alphas = np.arange(0.0, 180.0, 15.0) * np.pi/180.0
-        nAlphas = len(alphas)
+        nAlphas = alphas.size
         data = [None] * nAlphas
 
         for k in np.arange(0, nAlphas):
