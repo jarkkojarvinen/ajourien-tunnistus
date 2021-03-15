@@ -14,6 +14,15 @@ from .utils.image_utils import (
     create_slope_image)
 
 
+def read_mat_file(mat_fname):
+    print(f'Reading {mat_fname}...')
+    temp = sio.loadmat(mat_fname, variable_names=['z', 'mask'])
+    z0 = temp['z'].astype(int)
+    mask = temp['mask'].astype(int)
+    # Clear temptemp = None
+    return z0, mask
+
+
 def run(mat_fname, m=0.03292):
     """
     mat_fname = file path to mat file
@@ -37,13 +46,14 @@ def run(mat_fname, m=0.03292):
                         [l, l]])
 
     sz0 = z0.shape
+    nDls = dls.shape[0]
     Hfinal = np.zeros(sz0)
     Afinal = np.zeros(sz0)
     sFinal = np.zeros(sz0)
-    indsXUsed = []
-    indsYUsed = []
+    indsXUsed = np.array([], dtype='int')
+    indsYUsed = np.array([], dtype='int')
 
-    for l in trange(dls.shape[0], desc='Processing directional curvatures'):
+    for l in trange(nDls, desc='Processing directional curvatures'):
         dl = dls[l]
         indsLx = np.arange(dl[0], sz0[0], kSkip)
         indsLy = np.arange(dl[1], sz0[1], kSkip)
@@ -80,11 +90,11 @@ def run(mat_fname, m=0.03292):
         Hfinal[np.ix_(indsLx, indsLy)] = H
         Afinal[np.ix_(indsLx, indsLy)] = A
         sFinal[np.ix_(indsLx, indsLy)] = s
-        indsXUsed = np.concatenate((indsXUsed, indsLx)).astype(int)
-        indsYUsed = np.concatenate((indsYUsed, indsLy)).astype(int)
+        indsXUsed = np.concatenate((indsXUsed, indsLx))
+        indsYUsed = np.concatenate((indsYUsed, indsLy))
 
-    indsXUsed = np.sort(np.unique(indsXUsed))
-    indsYUsed = np.sort(np.unique(indsYUsed))
+    indsXUsed = np.unique(indsXUsed)
+    indsYUsed = np.unique(indsYUsed)
     H = Hfinal[np.ix_(indsXUsed, indsYUsed)].copy()
     Hfinal = None
     A = Afinal[np.ix_(indsXUsed, indsYUsed)].copy()
@@ -105,12 +115,12 @@ def run(mat_fname, m=0.03292):
     fk = fk / np.trapz(kappaBins, fk)
     cfk = np.cumsum(fk) / np.sum(fk)
     eps = 0.05
-    i1 = np.argmin(np.abs(cfk-eps))
-    i2 = np.argmin(np.abs(cfk-(1-eps)))
+    i1 = np.argmin(abs(cfk-eps))
+    i2 = np.argmin(abs(cfk-(1-eps)))
     Hmin = kappaBins[i1]
     Hmax = kappaBins[i2]  # 90 % of values within [Hmin,Hmax]
 
-    sTemp = np.reshape(s, (np.prod(s.shape), 1))
+    sTemp = np.reshape(s, (np.prod(s.shape), 1)).flatten()
     sTemp = sTemp[inds]
     fs, sBins = histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
@@ -128,12 +138,3 @@ def run(mat_fname, m=0.03292):
     create_slope_image(delta, s)
 
     print("Ready.")
-
-
-def read_mat_file(mat_fname):
-    print(f'Reading {mat_fname}...')
-    temp = sio.loadmat(mat_fname, variable_names=['z', 'mask'])
-    z0 = temp['z'].astype(int)
-    mask = temp['mask'].astype(int)
-    # Clear temptemp = None
-    return z0, mask

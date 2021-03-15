@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 def create_ks_histograms(fk, kappaBins, fs, sBins):
