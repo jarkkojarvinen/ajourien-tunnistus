@@ -4,15 +4,15 @@ from .alpha2u import alpha2u
 
 def __calculate_lzb(u, z, zs, h):
     """
-    Repeatitive code extracted to single method to return l_x, z_x and beta_x
+    Repeatitive code extracted to single method to return lx, zx and betax
     """
     uf = int(np.floor(u))
     uc = int(np.ceil(u))
     t = int(u - uf)
     zx = zs[uf].z * (1-t) + zs[uc].z * t
-    beta = np.arctan2(zx - z, h)
-    lx = h / np.cos(beta)
-    return lx, zx, beta
+    betax = np.arctan2(zx - z, h)
+    lx = h / np.cos(betax)
+    return lx, zx, betax
 
 
 def get_directional_H(alpha, delta, z, zs):

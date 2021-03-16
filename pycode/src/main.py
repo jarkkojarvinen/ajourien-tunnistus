@@ -19,7 +19,7 @@ def read_mat_file(mat_fname):
     temp = sio.loadmat(mat_fname, variable_names=['z', 'mask'])
     z0 = temp['z'].astype(int)
     mask = temp['mask'].astype(int)
-    # Clear temptemp = None
+    temp = None
     return z0, mask
 
 
@@ -105,9 +105,9 @@ def run(mat_fname, m=0.03292):
     mask = mask[np.ix_(indsXUsed, indsYUsed)]
 
     # mask the non-target zone away from the histograms
-    m = np.reshape(mask, (np.prod(mask.shape), 1)).flatten()
-    inds = m.nonzero()
-    Htemp = np.reshape(H, (np.prod(H.shape), 1)).flatten()
+    m = np.reshape(mask, (np.prod(mask.shape), 1))
+    inds = m.ravel().nonzero()
+    Htemp = np.reshape(H, (np.prod(H.shape), 1))
     Htemp = Htemp[inds]
     fk, kappaBins = histogram(Htemp, 80)
     Htemp = None
@@ -121,7 +121,8 @@ def run(mat_fname, m=0.03292):
     Hmin = kappaBins[i1]
     Hmax = kappaBins[i2]  # 90 % of values within [Hmin,Hmax]
 
-    sTemp = np.reshape(s, (np.prod(s.shape), 1)).flatten()
+    sTemp = np.reshape(s, (np.prod(s.shape), 1))
+    # TODO: Here was stemp used in original code: stemp = sTemp[inds]
     sTemp = sTemp[inds]
     fs, sBins = histogram(sTemp, 80)
     fs = fs / np.trapz(sBins, fs)
